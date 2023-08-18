@@ -1,0 +1,13 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  MST\MstYaml2Tca\:
+    resource: '../Classes/*'
+
+  MST\MstYaml2Tca\Listener\PageTsConfig:
+    tags:
+      - name: event.listener
+        identifier: 'tx-mst-yaml2tca-page-ts-config'

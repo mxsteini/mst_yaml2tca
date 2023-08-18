@@ -1,0 +1,23 @@
+{
+  "name": "mst/mst-yaml2tca",
+  "type": "yaml2tca loader",
+  "description": "Load YAML files to TCA",
+  "authors": [
+    {
+      "name": "Michael Stein",
+      "email": "info@michaelstein-itb.de",
+      "role": "Developer"
+    }
+  ],
+  "license": "proprietary",
+	"autoload": {
+		"psr-4": {
+			"MST\\MstYaml2Tca\\": "Classes/"
+		}
+	},
+	"extra": {
+		"typo3/cms": {
+			"extension-key": "mst_yaml2tca"
+		}
+	}
+}
