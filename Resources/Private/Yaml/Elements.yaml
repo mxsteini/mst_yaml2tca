@@ -5,16 +5,20 @@ plugins:
     title: "Navigation Elements"
     # list of elements
     elements:
-      # element id
+      # element id should be the plugin name
       headernavigation:
-        extension: mst_site
-        plugin: headernavigation
+        # Optional
+        extension:
+        # Optional
+        plugin:
         title: plugin
         description: "please use LLL:EXT… notation"
         iconIdentifier: content-container-columns-2
+        # Optional
         defaultValues:
-          CType: list
-          list_type: mstsite_headernavigation
+          # Optional
+          # list_type: mstsite_headernavigation
+          header: "Test"
 
 contentElements:
   # group id
@@ -26,6 +30,7 @@ contentElements:
       # element id
       new_mst_site_text:
         title: "new Text"
+        description: "please use LLL:EXT… notation"
         icon: "content-text"
         config:
           columnsOverrides:

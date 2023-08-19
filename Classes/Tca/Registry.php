@@ -28,21 +28,22 @@ class Registry implements SingletonInterface
     $this->extensionToScan[] = $extKey;
   }
 
-  public function loadFile(string $file)
+  public function loadFile(string $extKey, string $file)
   {
     if (!key_exists($file, $this->filesToLoad) && file_exists($file)) {
       $this->filesToLoad[$file] = [
         'filename' => $file,
         'tca' => false,
-        'tsconfig' => false
+        'tsconfig' => false,
+        'extKey' => $extKey
       ];
 
       $content = (new YamlFileLoader())->load($file);
       if (key_exists('contentElements', $content) && is_array($content['contentElements'])) {
-        $this->loadContentElements($content['contentElements']);
+        $this->loadContentElements($extKey, $content['contentElements']);
       }
       if (key_exists('plugins', $content) && is_array($content['plugins'])) {
-        $this->loadPlugins($content['plugins']);
+        $this->loadPlugins($extKey, $content['plugins']);
       }
     }
   }
@@ -64,15 +65,17 @@ class Registry implements SingletonInterface
     return $sections;
   }
 
-  public function setTsConfigDone($file) {
+  public function setTsConfigDone($file)
+  {
     $this->filesToLoad[$file]['tsconfig'] = true;
   }
 
-  public function getTsConfigStatus($file) {
+  public function getTsConfigStatus($file)
+  {
     return $this->filesToLoad[$file]['tsconfig'];
   }
 
-  private function loadContentElements(array $contentElements)
+  private function loadContentElements(string $extKey = '', array $contentElements)
   {
     $sections = $this->makeElements($contentElements);
     foreach ($sections as $sectionId => $section) {
@@ -101,7 +104,7 @@ class Registry implements SingletonInterface
     }
   }
 
-  private function loadPlugins(array $plugins)
+  private function loadPlugins(string $extKey = '', array $plugins)
   {
     $sections = $this->makeElements($plugins);
 
@@ -112,22 +115,25 @@ class Registry implements SingletonInterface
         $sectionId,
         $section['title'],
         $section['position'] ?? 'bottom');
-      foreach ($section['elements'] as $ctype => $element) {
-        ExtensionUtility::registerPlugin($element['extension'], $element['plugin'], $element['title']);
+      foreach ($section['elements'] as $elementId => $element) {
+        $plugin = key_exists('plugin', $element) ? $element['plugin'] : $elementId;
+        $extension = key_exists('extension', $element) ? $element['extension'] : $extKey;
+        ExtensionUtility::registerPlugin(
+          $extension,
+          $plugin,
+          $element['title']);
 
-        $possibleFlexForm = 'EXT:' . $element['extension'] . '/Configuration/FlexForms/' . GeneralUtility::underscoredToUpperCamelCase($element['plugin']) . '.xml';
+        $possibleFlexForm = 'EXT:' . $extension . '/Configuration/FlexForms/' . GeneralUtility::underscoredToUpperCamelCase($plugin) . '.xml';
         if (key_exists('flexform', $element)) {
           $possibleFlexForm = $element['flexform'];
         }
 
         if (file_exists(GeneralUtility::getFileAbsFileName($possibleFlexForm))) {
-          $this->logger->error('flexform found');
-          $this->logger->error($possibleFlexForm);
-          $extensionSignature = mb_strtolower(GeneralUtility::underscoredToUpperCamelCase($element['extension']));
-          $GLOBALS['TCA']['tt_content']['types']['list']['subtypes_excludelist'][$extensionSignature . '_' . $element['plugin']] = 'layout,pages,select_key,recursive';
-          $GLOBALS['TCA']['tt_content']['types']['list']['subtypes_addlist'][$extensionSignature . '_' . $element['plugin']] = 'pi_flexform';
+          $extensionSignature = mb_strtolower(GeneralUtility::underscoredToUpperCamelCase($extension));
+          $GLOBALS['TCA']['tt_content']['types']['list']['subtypes_excludelist'][$extensionSignature . '_' . $plugin] = 'layout,pages,select_key,recursive';
+          $GLOBALS['TCA']['tt_content']['types']['list']['subtypes_addlist'][$extensionSignature . '_' . $plugin] = 'pi_flexform';
           ExtensionManagementUtility::addPiFlexFormValue(
-            $extensionSignature . '_' . $element['plugin'],
+            $extensionSignature . '_' . $plugin,
             'FILE:' . $possibleFlexForm
           );
         }

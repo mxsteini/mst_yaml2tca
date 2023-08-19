@@ -36,7 +36,7 @@ class PageTsConfig
     $localTsConfig = '';
     foreach ($files as $file) {
       if ($register->getTsConfigStatus($file['filename']) !== true) {
-        $localTsConfig .= $this->getPageTsString($file['filename']);
+        $localTsConfig .= $this->getPageTsString($file['extKey'], $file['filename']);
         $register->setTsConfigDone($file['filename']);
       }
     }
@@ -46,7 +46,7 @@ class PageTsConfig
   }
 
 
-  public function getPageTsString(string $file): string
+  public function getPageTsString(string $extKey, string $file): string
   {
     $pageTs = '';
 
@@ -63,6 +63,18 @@ mod.wizards.newContentElement.wizardItems.' . $group . '.header = ' . $groupConf
 mod.wizards.newContentElement.wizardItems.' . $group . '.show = *
 ';
             foreach ($groupConfigurations['elements'] as $cType => $elementConfiguration) {
+              if ($type === 'plugins') {
+                $defaultValues = [
+                  'CType' => 'list',
+                  'list_type' => mb_strtolower(GeneralUtility::underscoredToUpperCamelCase($extKey)) . '_' . $cType
+                ];
+                if (key_exists('defaultValues', $elementConfiguration)) {
+                  $elementConfiguration['defaultValues'] = array_replace_recursive($defaultValues, $elementConfiguration['defaultValues']);
+                } else {
+                  $elementConfiguration['defaultValues'] = $defaultValues;
+                }
+              }
+
               if (isset($elementConfiguration['defaultValues']) && is_array($elementConfiguration['defaultValues'])) {
                 array_walk($elementConfiguration['defaultValues'], static function (&$item, $key) {
                   $item = $key . ' = ' . $item;
