@@ -1,0 +1,71 @@
+plugins:
+  # group id
+  t3vnavigations:
+    # group title
+    title: "Navigation Elements"
+    # list of elements
+    elements:
+      # element id
+      headernavigation:
+        extension: mst_site
+        plugin: headernavigation
+        title: plugin
+        description: "please use LLL:EXT… notation"
+        iconIdentifier: content-container-columns-2
+        defaultValues:
+          CType: list
+          list_type: mstsite_headernavigation
+
+contentElements:
+  # group id
+  new_mst_site_basic_elements:
+    # group title
+    title: "New Basic elements yaml"
+    # list of elements
+    elements:
+      # element id
+      new_mst_site_text:
+        title: "new Text"
+        icon: "content-text"
+        config:
+          columnsOverrides:
+            bodytext:
+              config:
+                type: text
+                enableRichtext: true
+          # use array to create tabs
+          showItem:
+            -
+              title: "LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:general"
+              fields:
+                - "--palette--;;general"
+                - "--palette--;;header"
+                - "subheader"
+                - "bodytext"
+            -
+              title: "LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.appearance"
+              fields:
+                - "--palette--;;frames"
+            -
+              title: "LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:access"
+              fields:
+                - "--palette--;;hidden"
+                - "--palette--;;access"
+
+container:
+  # element id
+  col3:
+    label: '3 Cols'
+    description: '3 Cols'
+    iconIdentifier: content-container-columns-3
+    config:
+      -
+        -
+          name: "left"
+          colPos: 1000
+        -
+          name: "main"
+          colPos: 1001
+        -
+          name: "margin"
+          colPos: 1002
