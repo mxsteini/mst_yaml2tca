@@ -10,6 +10,8 @@ use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use Psr\Log\LoggerInterface;
 use TYPO3\CMS\Extbase\Utility\ExtensionUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use B13\Container\Tca\ContainerConfiguration;
+use B13\Container\Tca\Registry as ContainerRegistry;
 
 class Registry implements SingletonInterface
 {
@@ -44,6 +46,9 @@ class Registry implements SingletonInterface
       }
       if (key_exists('plugins', $content) && is_array($content['plugins'])) {
         $this->loadPlugins($extKey, $content['plugins']);
+      }
+      if (key_exists('container', $content) && is_array($content['container'])) {
+        $this->loadContainer($content['container']);
       }
     }
   }
@@ -141,8 +146,14 @@ class Registry implements SingletonInterface
     }
   }
 
-  private function loadContainer(array $container)
+  private function loadContainer(array $containers)
   {
+    foreach ($containers as $ctype => $container) {
+      $registry = GeneralUtility::makeInstance(ContainerRegistry::class);
+      $containerConfiguration = new ContainerConfiguration($ctype, $container['label'], $container['description'], $container['config']);
+      $containerConfiguration->setIcon($container['iconIdentifier']);
+      $registry->configureContainer($containerConfiguration);
+    }
   }
 
   public function getFiles()
