@@ -80,7 +80,7 @@ class Registry implements SingletonInterface
     return $this->filesToLoad[$file]['tsconfig'];
   }
 
-  private function loadContentElements(string $extKey = '', array $contentElements)
+  private function loadContentElements(string $extKey, array $contentElements)
   {
     $sections = $this->makeElements($contentElements);
     foreach ($sections as $sectionId => $section) {
@@ -109,7 +109,7 @@ class Registry implements SingletonInterface
     }
   }
 
-  private function loadPlugins(string $extKey = '', array $plugins)
+  private function loadPlugins(string $extKey, array $plugins)
   {
     $sections = $this->makeElements($plugins);
 
