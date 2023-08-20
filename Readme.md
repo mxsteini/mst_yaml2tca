@@ -15,4 +15,14 @@ Plugins and content elements can each be assigned to a group.
 Containers are always automatically sorted into the Container groups.
 In EXT:mst_yaml2tca/Resources/Private/Yaml/Elements.yaml is an example for such a file
 
-Unlike "real" TCA, the section "showItem" is defined as an array. Each entry corresponds to a tab
+Unlike "real" TCA, the section "showItem" is defined as an array. Each entry corresponds to a tab.
+
+## Usage
+To load a yaml file simply insert in:
+Configuration/TCA/Overrides/tt_content.php
+
+```php
+  $register = GeneralUtility::makeInstance(\MST\MstYaml2Tca\Tca\Registry::class);
+  $register->loadFile($extKey, GeneralUtility::getFileAbsFileName('EXT:[yourextension]/Configuration/Yaml/Elements.yaml'));
+```
+
