@@ -1,6 +1,6 @@
 {
   "name": "mst/mst-yaml2tca",
-  "type": "yaml2tca loader",
+  "type": "typo3-cms-extension",
   "description": "Load YAML files to TCA",
   "authors": [
     {
