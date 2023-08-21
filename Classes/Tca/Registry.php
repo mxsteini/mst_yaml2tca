@@ -126,7 +126,9 @@ class Registry implements SingletonInterface
         ExtensionUtility::registerPlugin(
           $extension,
           $plugin,
-          $element['title']);
+          $element['title'],
+          $element['icon'] ?? null
+        );
 
         $possibleFlexForm = 'EXT:' . $extension . '/Configuration/FlexForms/' . GeneralUtility::underscoredToUpperCamelCase($plugin) . '.xml';
         if (key_exists('flexform', $element)) {
