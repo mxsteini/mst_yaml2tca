@@ -82,6 +82,7 @@ class Registry implements SingletonInterface
 
   private function loadContentElements(string $extKey, array $contentElements)
   {
+    $extension = key_exists('extension', $section) ? $section['extension'] : $extKey;
     $sections = $this->makeElements($contentElements);
     foreach ($sections as $sectionId => $section) {
       ExtensionManagementUtility::addTcaSelectItemGroup(
@@ -104,6 +105,23 @@ class Registry implements SingletonInterface
 
         $GLOBALS['TCA']['tt_content']['types'][$ctype] = $element['config'];
         $GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes'][$ctype] = $element['icon'] ?? '';
+
+        $possibleFlexForm = 'EXT:' . $extension . '/Configuration/FlexForms/' . GeneralUtility::underscoredToUpperCamelCase($ctype) . '.xml';
+
+        if (key_exists('flexform', $element)) {
+          $possibleFlexForm = $element['flexform'];
+        }
+
+        if (file_exists(GeneralUtility::getFileAbsFileName($possibleFlexForm))) {
+          $extensionSignature = mb_strtolower(GeneralUtility::underscoredToUpperCamelCase($extension));
+          $GLOBALS['TCA']['tt_content']['types']['list']['subtypes_excludelist'][$extensionSignature . '_' . $ctype] = 'layout,pages,select_key,recursive';
+          $GLOBALS['TCA']['tt_content']['types']['list']['subtypes_addlist'][$extensionSignature . '_' . $ctype] = 'pi_flexform';
+          ExtensionManagementUtility::addPiFlexFormValue(
+            '*',
+            'FILE:' . $possibleFlexForm,
+            $ctype
+          );
+        }
 
       }
     }
