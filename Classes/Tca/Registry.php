@@ -82,7 +82,6 @@ class Registry implements SingletonInterface
 
   private function loadContentElements(string $extKey, array $contentElements)
   {
-    $extension = key_exists('extension', $section) ? $section['extension'] : $extKey;
     $sections = $this->makeElements($contentElements);
     foreach ($sections as $sectionId => $section) {
       ExtensionManagementUtility::addTcaSelectItemGroup(
@@ -92,6 +91,7 @@ class Registry implements SingletonInterface
         $section['title'],
         $section['position'] ?? 'bottom');
       foreach ($section['elements'] as $ctype => $element) {
+        $extension = key_exists('extension', $section) ? $element['extension'] : $extKey;
         ExtensionManagementUtility::addTcaSelectItem(
           'tt_content',
           'CType',
