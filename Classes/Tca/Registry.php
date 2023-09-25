@@ -17,7 +17,6 @@ class Registry implements SingletonInterface
 {
 
   private $extensionToScan = [];
-  private $filesToLoad = [];
 
   public function __construct(
     private readonly LoggerInterface $logger
@@ -32,8 +31,11 @@ class Registry implements SingletonInterface
 
   public function loadFile(string $extKey, string $file)
   {
-    if (!key_exists($file, $this->filesToLoad) && file_exists($file)) {
-      $this->filesToLoad[$file] = [
+    if (!$GLOBALS['TCA']['tt_content']['yaml2tca']) {
+      $GLOBALS['TCA']['tt_content']['yaml2tca']['filesToLoad'] = [];
+    }
+    if (!key_exists($file, $GLOBALS['TCA']['tt_content']['yaml2tca']['filesToLoad']) && file_exists($file)) {
+      $GLOBALS['TCA']['tt_content']['yaml2tca']['filesToLoad'][$file] = [
         'filename' => $file,
         'tca' => false,
         'tsconfig' => false,

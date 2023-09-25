@@ -14,7 +14,7 @@ namespace MST\MstYaml2Tca\Listener;
 
 use MST\MstYaml2Tca\Tca\Registry;
 use Psr\Log\LoggerInterface;
-use TYPO3\CMS\Core\TypoScript\IncludeTree\Event\ModifyLoadedPageTsConfigEvent;
+use TYPO3\CMS\Core\Configuration\Event\ModifyLoadedPageTsConfigEvent;
 use TYPO3\CMS\Core\Configuration\Loader\YamlFileLoader;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -32,7 +32,7 @@ class PageTsConfig
   {
     $tsConfig = $event->getTsConfig();
     $register = GeneralUtility::makeInstance(Registry::class);
-    $files = $register->getFiles();
+    $files = $GLOBALS['TCA']['tt_content']['yaml2tca']['filesToLoad'];
     $localTsConfig = '';
     foreach ($files as $file) {
       if ($register->getTsConfigStatus($file['filename']) !== true) {
@@ -52,8 +52,7 @@ class PageTsConfig
 
     if (file_exists($file)) {
       $tt_content = (new YamlFileLoader())->load($file);
-
-
+//        $tt_content = $GLOBALS['TCA']['tt_content']['yaml2tca']['elements'];
       foreach (['plugins', 'contentElements'] as $type) {
         if (key_exists($type, $tt_content) && is_array($tt_content[$type])) {
           foreach ($tt_content[$type] as $group => $groupConfigurations) {
