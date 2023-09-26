@@ -16,24 +16,17 @@ use B13\Container\Tca\Registry as ContainerRegistry;
 class Registry implements SingletonInterface
 {
 
-  private $extensionToScan = [];
-
   public function __construct(
     private readonly LoggerInterface $logger
   )
   {
-  }
-
-  public function loadExtension(string $extKey)
-  {
-    $this->extensionToScan[] = $extKey;
+    if (!$GLOBALS['TCA']['tt_content']['yaml2tca']) {
+      $GLOBALS['TCA']['tt_content']['yaml2tca']['filesToLoad'] = [];
+    }
   }
 
   public function loadFile(string $extKey, string $file)
   {
-    if (!$GLOBALS['TCA']['tt_content']['yaml2tca']) {
-      $GLOBALS['TCA']['tt_content']['yaml2tca']['filesToLoad'] = [];
-    }
     if (!key_exists($file, $GLOBALS['TCA']['tt_content']['yaml2tca']['filesToLoad']) && file_exists($file)) {
       $GLOBALS['TCA']['tt_content']['yaml2tca']['filesToLoad'][$file] = [
         'filename' => $file,
@@ -74,12 +67,12 @@ class Registry implements SingletonInterface
 
   public function setTsConfigDone($file)
   {
-    $this->filesToLoad[$file]['tsconfig'] = true;
+    $GLOBALS['TCA']['tt_content']['yaml2tca']['filesToLoad'][$file]['tsconfig'] = true;
   }
 
   public function getTsConfigStatus($file)
   {
-    return $this->filesToLoad[$file]['tsconfig'];
+    return $GLOBALS['TCA']['tt_content']['yaml2tca']['filesToLoad'][$file]['tsconfig'];
   }
 
   private function loadContentElements(string $extKey, array $contentElements)
@@ -180,7 +173,7 @@ class Registry implements SingletonInterface
 
   public function getFiles()
   {
-    return $this->filesToLoad;
+    return $GLOBALS['TCA']['tt_content']['yaml2tca']['filesToLoad'];
   }
 
   public function collectFilesFromExtensions()
