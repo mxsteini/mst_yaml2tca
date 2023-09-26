@@ -20,7 +20,7 @@ class Registry implements SingletonInterface
     private readonly LoggerInterface $logger
   )
   {
-    if (!$GLOBALS['TCA']['tt_content']['yaml2tca']) {
+    if (!key_exists('yaml2tca', $GLOBALS['TCA']['tt_content'])) {
       $GLOBALS['TCA']['tt_content']['yaml2tca']['filesToLoad'] = [];
     }
   }
