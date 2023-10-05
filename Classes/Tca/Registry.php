@@ -53,7 +53,7 @@ class Registry implements SingletonInterface
     foreach ($sections as &$section) {
       foreach ($section['elements'] as &$element) {
         if (key_exists('config', $element) && is_array($element['config']) && key_exists('showItem', $element['config'])) {
-          $element['config']['showItem'] = $this->compileShowItem($element['config']['showItem']);
+          $element['config']['showitem'] = $this->compileShowItem($element['config']['showItem']);
         }
       }
     }
