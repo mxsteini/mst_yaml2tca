@@ -43,7 +43,7 @@ class Registry implements SingletonInterface
         $this->loadPlugins($extKey, $content['plugins']);
       }
       if (key_exists('container', $content) && is_array($content['container'])) {
-        $this->loadContainer($content['container']);
+        $this->loadContainer($extKey, $content['container']);
       }
     }
   }
@@ -52,17 +52,23 @@ class Registry implements SingletonInterface
   {
     foreach ($sections as &$section) {
       foreach ($section['elements'] as &$element) {
-        $divs = [];
         if (key_exists('config', $element) && is_array($element['config']) && key_exists('showItem', $element['config'])) {
-          foreach ($element['config']['showItem'] as $div) {
-            $fields = implode(',', $div['fields']);
-            $divs[] = '--div--;' . $div['title'] . ',' . $fields;
-          }
-          $element['config']['showitem'] = implode(',', $divs);
+          $element['config']['showItem'] = $this->compileShowItem($element['config']['showItem']);
         }
       }
     }
     return $sections;
+  }
+
+  private function compileShowItem($element)
+  {
+    $divs = [];
+
+    foreach ($element as $div) {
+      $fields = implode(',', $div['fields']);
+      $divs[] = '--div--;' . $div['title'] . ',' . $fields;
+    }
+    return implode(',', $divs);
   }
 
   public function setTsConfigDone($file)
@@ -161,13 +167,39 @@ class Registry implements SingletonInterface
     }
   }
 
-  private function loadContainer(array $containers)
+  private function loadContainer(string $extKey, array $containers)
   {
     foreach ($containers as $ctype => $container) {
+      $extension = key_exists('extension', $container) ? $container['extension'] : $extKey;
+      $plugin = key_exists('plugin', $container) ? $element['plugin'] : $ctype;
+
       $registry = GeneralUtility::makeInstance(ContainerRegistry::class);
       $containerConfiguration = new ContainerConfiguration($ctype, $container['label'], $container['description'], $container['config']);
       $containerConfiguration->setIcon($container['iconIdentifier']);
       $registry->configureContainer($containerConfiguration);
+      $possibleFlexForm = 'EXT:' . $extension . '/Configuration/FlexForms/' . GeneralUtility::underscoredToUpperCamelCase($ctype) . '.xml';
+      if (key_exists('flexform', $container)) {
+        $possibleFlexForm = $container['flexform'];
+      }
+
+      if (file_exists(GeneralUtility::getFileAbsFileName($possibleFlexForm))) {
+        $extensionSignature = mb_strtolower(GeneralUtility::underscoredToUpperCamelCase($extension));
+        ExtensionManagementUtility::addToAllTCAtypes(
+          'tt_content',
+          'pi_flexform',
+          $ctype,
+          'after:header'
+        );
+
+        ExtensionManagementUtility::addPiFlexFormValue(
+          '*',
+          'FILE:' . $possibleFlexForm,
+          $ctype
+        );
+      }
+      if (key_exists('showItem', $container)) {
+        $GLOBALS['TCA']['tt_content']['types'][$ctype]['showitem'] = $this->compileShowItem($container['showItem']);
+      }
     }
   }
 
