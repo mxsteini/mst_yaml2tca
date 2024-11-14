@@ -25,7 +25,7 @@ class Registry implements SingletonInterface
     }
   }
 
-  public function loadFile(string $extKey, string $file)
+  public function loadFile(string $extKey, string $file): void
   {
     if (!key_exists($file, $GLOBALS['TCA']['tt_content']['yaml2tca']['filesToLoad']) && file_exists($file)) {
       $GLOBALS['TCA']['tt_content']['yaml2tca']['filesToLoad'][$file] = [
@@ -35,7 +35,7 @@ class Registry implements SingletonInterface
         'extKey' => $extKey
       ];
 
-      $content = (new YamlFileLoader())->load($file);
+      $content = GeneralUtility::makeInstance(YamlFileLoader::class)->load($file);
       if (key_exists('contentElements', $content) && is_array($content['contentElements'])) {
         $this->loadContentElements($extKey, $content['contentElements']);
       }
@@ -48,7 +48,7 @@ class Registry implements SingletonInterface
     }
   }
 
-  private function makeElements($sections)
+  private function makeElements(array $sections): array
   {
     foreach ($sections as &$section) {
       foreach ($section['elements'] as &$element) {
@@ -60,7 +60,7 @@ class Registry implements SingletonInterface
     return $sections;
   }
 
-  private function compileShowItem($element)
+  private function compileShowItem(array $element): string
   {
     $divs = [];
 
@@ -71,17 +71,17 @@ class Registry implements SingletonInterface
     return implode(',', $divs);
   }
 
-  public function setTsConfigDone($file)
+  public function setTsConfigDone(string $file): void
   {
     $GLOBALS['TCA']['tt_content']['yaml2tca']['filesToLoad'][$file]['tsconfig'] = true;
   }
 
-  public function getTsConfigStatus($file)
+  public function getTsConfigStatus(string $file): bool
   {
     return $GLOBALS['TCA']['tt_content']['yaml2tca']['filesToLoad'][$file]['tsconfig'];
   }
 
-  private function loadContentElements(string $extKey, array $contentElements)
+  private function loadContentElements(string $extKey, array $contentElements): void
   {
     $sections = $this->makeElements($contentElements);
     foreach ($sections as $sectionId => $section) {
@@ -128,7 +128,7 @@ class Registry implements SingletonInterface
     }
   }
 
-  private function loadPlugins(string $extKey, array $plugins)
+  private function loadPlugins(string $extKey, array $plugins): void
   {
     $sections = $this->makeElements($plugins);
 
@@ -167,7 +167,7 @@ class Registry implements SingletonInterface
     }
   }
 
-  private function loadContainer(string $extKey, array $containers)
+  private function loadContainer(string $extKey, array $containers): void
   {
     foreach ($containers as $ctype => $container) {
       $extension = key_exists('extension', $container) ? $container['extension'] : $extKey;
@@ -203,12 +203,12 @@ class Registry implements SingletonInterface
     }
   }
 
-  public function getFiles()
+  public function getFiles(): array
   {
     return $GLOBALS['TCA']['tt_content']['yaml2tca']['filesToLoad'];
   }
 
-  public function collectFilesFromExtensions()
+  public function collectFilesFromExtensions(): array 
   {
     return [];
   }
