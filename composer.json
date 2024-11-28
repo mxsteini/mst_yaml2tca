@@ -9,9 +9,12 @@
       "role": "Developer"
     }
   ],
+  "require": {
+    "typo3/cms-core": "^11.5 || ^12.4 || ^13.4"
+  },
   "license": "proprietary",
-	"autoload": {
-		"psr-4": {
+  "autoload": {
+    "psr-4": {
 			"MST\\MstYaml2Tca\\": "Classes/"
 		}
 	},
