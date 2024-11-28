@@ -45,6 +45,29 @@ class Registry implements SingletonInterface
       if (key_exists('container', $content) && is_array($content['container'])) {
         $this->loadContainer($extKey, $content['container']);
       }
+      if (key_exists('palettes', $content) && is_array($content['palettes'])) {
+        $this->loadPalettes($extKey, $content['palettes']);
+      }
+      if (key_exists('columns', $content) && is_array($content['columns'])) {
+        $this->loadColumns($extKey, $content['columns']);
+      }
+    }
+  }
+
+  private function loadPalettes(string $extKey, array $palettes): void
+  {
+    foreach ($palettes as $tablename => $palettes) {
+      foreach ($palettes as $paletteId => $palette) {
+        $GLOBALS['TCA'][$tablename]['palettes'][$paletteId]['label'] = $palette['label'];
+        $GLOBALS['TCA'][$tablename]['palettes'][$paletteId]['showitem'] = implode(',', $palette['showitem']);
+      }
+    }
+  }
+
+  private function loadColumns(string $extKey, array $columns): void
+  {
+    foreach ($columns as $tablename => $columns) {
+      ExtensionManagementUtility::addTCAcolumns($tablename, $columns);
     }
   }
 
@@ -52,9 +75,11 @@ class Registry implements SingletonInterface
   {
     foreach ($sections as &$section) {
       foreach ($section['elements'] as &$element) {
-        if (key_exists('config', $element) && is_array($element['config']) && key_exists('showItem', $element['config'])) {
+        if (key_exists('config', $element) && is_array($element['config']) && key_exists('showitem', $element['config'])) {
+          $element['config']['showitem'] = $this->compileShowItem($element['config']['showitem']);
+        } else if (key_exists('config', $element) && is_array($element['config']) && key_exists('showItem', $element['config'])) {
           $element['config']['showitem'] = $this->compileShowItem($element['config']['showItem']);
-        }
+        } 
       }
     }
     return $sections;
@@ -107,7 +132,7 @@ class Registry implements SingletonInterface
         $GLOBALS['TCA']['tt_content']['types'][$ctype] = $element['config'];
         $GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes'][$ctype] = $element['icon'] ?? '';
 
-        $possibleFlexForm = 'EXT:' . $extension . '/Configuration/FlexForms/' . GeneralUtility::underscoredToUpperCamelCase($ctype) . '.xml';
+        $possibleFlexForm = 'EXT:' . $extension . '/Configuration/FlexForms/ContentElements/' . GeneralUtility::underscoredToUpperCamelCase($ctype) . '.xml';
 
         if (key_exists('flexform', $element)) {
           $possibleFlexForm = $element['flexform'];
@@ -149,7 +174,7 @@ class Registry implements SingletonInterface
           $element['icon'] ?? null
         );
 
-        $possibleFlexForm = 'EXT:' . $extension . '/Configuration/FlexForms/' . GeneralUtility::underscoredToUpperCamelCase($plugin) . '.xml';
+        $possibleFlexForm = 'EXT:' . $extension . '/Configuration/FlexForms/Plugins/' . GeneralUtility::underscoredToUpperCamelCase($plugin) . '.xml';
         if (key_exists('flexform', $element)) {
           $possibleFlexForm = $element['flexform'];
         }
@@ -177,7 +202,7 @@ class Registry implements SingletonInterface
       $containerConfiguration = new ContainerConfiguration($ctype, $container['label'], $container['description'], $container['config']);
       $containerConfiguration->setIcon($container['iconIdentifier']);
       $registry->configureContainer($containerConfiguration);
-      $possibleFlexForm = 'EXT:' . $extension . '/Configuration/FlexForms/' . GeneralUtility::underscoredToUpperCamelCase($ctype) . '.xml';
+      $possibleFlexForm = 'EXT:' . $extension . '/Configuration/FlexForms/Containers/' . GeneralUtility::underscoredToUpperCamelCase($ctype) . '.xml';
       if (key_exists('flexform', $container)) {
         $possibleFlexForm = $container['flexform'];
       }
