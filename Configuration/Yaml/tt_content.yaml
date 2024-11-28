@@ -1,48 +1,5 @@
-columns:
-  tt_content:
-    color:
-      label: 'Color'
-      config:
-        type: color
-        valuePicker:
-          items:
-            - ['Rot', '#E30613']
-            - ['Grau', '#F4F4F4']
-            - ['Verlauf', 'Verlauf']
 
 
-palettes:
-  tt_content:
-    small_header:
-      label: 'Small Header'
-      showitem:
-        - header
-        - subheader
-        - --linebreak--
-        - header_layout
-
-
-plugins:
-  # group id
-  t3vnavigations:
-    # group title
-    title: "Navigation Elements"
-    # list of elements
-    elements:
-      # element id should be the plugin name
-      headernavigation:
-        # Optional
-        extension:
-        # Optional
-        plugin:
-        title: plugin
-        description: "please use LLL:EXT… notation"
-        iconIdentifier: content-container-columns-2
-        # Optional
-        defaultValues:
-          # Optional
-          # list_type: mstsite_headernavigation
-          header: "Test"
 
 contentElements:
   # group id
@@ -68,9 +25,10 @@ contentElements:
               title: "LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:general"
               fields:
                 - "--palette--;;general"
-                - "--palette--;;header"
+                - "--palette--;;small_header"
                 - "subheader"
                 - "bodytext"
+                - "color"
             -
               title: "LLL:EXT:frontend/Resources/Private/Language/locallang_ttc.xlf:tabs.appearance"
               fields:
