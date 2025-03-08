@@ -79,7 +79,7 @@ class Registry implements SingletonInterface
           $element['config']['showitem'] = $this->compileShowItem($element['config']['showitem']);
         } else if (key_exists('config', $element) && is_array($element['config']) && key_exists('showItem', $element['config'])) {
           $element['config']['showitem'] = $this->compileShowItem($element['config']['showItem']);
-        } 
+        }
       }
     }
     return $sections;
@@ -118,15 +118,25 @@ class Registry implements SingletonInterface
         $section['position'] ?? 'bottom');
       foreach ($section['elements'] as $ctype => $element) {
         $extension = key_exists('extension', $section) ? $element['extension'] : $extKey;
-        ExtensionManagementUtility::addTcaSelectItem(
-          'tt_content',
-          'CType',
-          [
+        // For TYPO3 v13+, use SelectItem class if available
+        if (class_exists(\TYPO3\CMS\Core\Schema\Struct\SelectItem::class)) {
+          $localElement = $element;
+          $localElement['label'] = $element['title'];
+          $localElement['value'] = $ctype;
+          $localElement['group'] = $sectionId;
+          $selectItem = \TYPO3\CMS\Core\Schema\Struct\SelectItem::fromTcaItemArray($localElement);
+        } else {
+          $selectItem = [
             $element['title'],
             $ctype,
             $element['icon'] ?? '',
             $sectionId,
-          ],
+          ];
+        }
+        ExtensionManagementUtility::addTcaSelectItem(
+          'tt_content',
+          'CType',
+          $selectItem
         );
 
         $GLOBALS['TCA']['tt_content']['types'][$ctype] = $element['config'];
@@ -233,7 +243,7 @@ class Registry implements SingletonInterface
     return $GLOBALS['TCA']['tt_content']['yaml2tca']['filesToLoad'];
   }
 
-  public function collectFilesFromExtensions(): array 
+  public function collectFilesFromExtensions(): array
   {
     return [];
   }
