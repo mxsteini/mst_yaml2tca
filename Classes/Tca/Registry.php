@@ -15,6 +15,7 @@ use B13\Container\Tca\Registry as ContainerRegistry;
 
 class Registry implements SingletonInterface
 {
+  private bool $isTypo3V13OrHigher;
 
   public function __construct(
     private readonly LoggerInterface $logger
@@ -23,6 +24,9 @@ class Registry implements SingletonInterface
     if (!key_exists('yaml2tca', $GLOBALS['TCA']['tt_content'])) {
       $GLOBALS['TCA']['tt_content']['yaml2tca']['filesToLoad'] = [];
     }
+    $typo3Version = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(\TYPO3\CMS\Core\Information\Typo3Version::class);
+    $this->isTypo3V13OrHigher = $typo3Version->getMajorVersion() >= 13;
+
   }
 
   public function loadFile(string $extKey, string $file): void
@@ -119,7 +123,7 @@ class Registry implements SingletonInterface
       foreach ($section['elements'] as $ctype => $element) {
         $extension = key_exists('extension', $section) ? $element['extension'] : $extKey;
         // For TYPO3 v13+, use SelectItem class if available
-        if (class_exists(\TYPO3\CMS\Core\Schema\Struct\SelectItem::class)) {
+        if ($this->isTypo3V13OrHigher) {
           $localElement = $element;
           $localElement['label'] = $element['title'];
           $localElement['value'] = $ctype;
