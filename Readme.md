@@ -1,5 +1,9 @@
 # EXT:mst_yaml2tca - Load simple TCA-Elements from yaml
 
+> [!WARNING]
+> **This extension is no longer supported.** `mst_yaml2tca` is not maintained any more: there will be no further
+> features, bug fixes or compatibility updates. Use it at your own risk and consider a fork if you still depend on it.
+
 ## Situation
 Writing TCA is always exhausting. Especially if you want to have the element in the New Content Element Wizard.
 With this extension it is possible to put simple elements in a YAML file.

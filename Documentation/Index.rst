@@ -29,6 +29,14 @@ YAML to TCA Loader
 
 ----
 
+.. warning::
+
+   **This extension is no longer supported.** ``mst_yaml2tca`` is not maintained any more: there will be no
+   further features, bug fixes or compatibility updates. Use it at your own risk and consider a fork if you
+   still depend on it.
+
+----
+
 This extension allows you to define TYPO3 TCA elements using YAML configuration files,
 making it easier to create and maintain content elements, plugins, and containers.
 
